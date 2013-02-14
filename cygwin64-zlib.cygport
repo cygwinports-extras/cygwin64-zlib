@@ -1,0 +1,63 @@
+CROSS_HOST="x86_64-pc-cygwin"
+inherit cross
+
+NAME="cygwin64-zlib"
+VERSION=1.2.7
+RELEASE=1
+CATEGORY="Devel"
+SUMMARY="zlib for Cygwin 64bit toolchain"
+DESCRIPTION=
+HOMEPAGE="http://www.zlib.net/"
+SRC_URI="mirror://sourceforge/libpng/zlib-${VERSION}.tar.gz"
+SRC_DIR="zlib-${VERSION}"
+PATCH_URI="
+	1.2.7-minizip-cygwin.patch
+	1.2.7-zlib-symbols.patch
+"
+
+PKG_NAMES="${PN} ${PN/zlib/minizip}"
+cygwin64_zlib_CONTENTS="${CROSS_BINDIR#/}/cygz.dll ${CROSS_INCLUDEDIR#/}/z*.h ${CROSS_LIBDIR#/}/libz.*
+                        ${CROSS_LIBDIR#/}/pkgconfig/zlib.pc usr/share/doc/${PN}/"
+cygwin64_minizip_SUMMARY=${SUMMARY/zlib/minizip}
+cygwin64_minizip_CONTENTS="${CROSS_BINDIR#/}/cygminizip-1.dll ${CROSS_INCLUDEDIR#/}/minizip/ ${CROSS_LIBDIR#/}/libminizip.*
+                           ${CROSS_LIBDIR#/}/pkgconfig/minizip.pc usr/share/doc/${PN/zlib/minizip}/"
+
+DISTCLEANFILES="contrib/minizip/Makefile"
+
+src_compile() {
+	cd ${S}/contrib/minizip
+	cygautoreconf
+	lndirs
+	rm -fr ${B}/contrib/minizip/*
+
+	cd ${B}
+	cygmake -f win32/Makefile.gcc \
+		PREFIX=${CROSS_HOST}- STRIP=: \
+		CFLAGS="${CFLAGS}" \
+		SHAREDLIB=cygz.dll IMPLIB=libz.dll.a
+
+	cd ${B}/contrib/minizip
+	cygconf
+	cygmake LDFLAGS=-no-undefined
+}
+
+src_install() {
+	cd ${B}
+	cyginstall -f win32/Makefile.gcc \
+		SHAREDLIB=cygz.dll IMPLIB=libz.dll.a \
+		SHARED_MODE=1 \
+		BINARY_PATH=${CROSS_BINDIR} \
+		INCLUDE_PATH=${CROSS_INCLUDEDIR} \
+		LIBRARY_PATH=${CROSS_LIBDIR}
+
+	cd ${B}/contrib/minizip
+	cyginstall
+
+	docinto /${PN/zlib/minizip}
+	dodoc ${S}/contrib/minizip/*.txt
+
+	# already provided by native zlib
+	rm -fr ${D}${CROSS_DATADIR}/man
+}
+
+KEEP_LA_FILES="none"
