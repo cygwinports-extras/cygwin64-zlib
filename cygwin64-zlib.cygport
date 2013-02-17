@@ -3,7 +3,7 @@ inherit cross
 
 NAME="cygwin64-zlib"
 VERSION=1.2.7
-RELEASE=1
+RELEASE=2
 CATEGORY="Devel"
 SUMMARY="zlib for Cygwin 64bit toolchain"
 DESCRIPTION=
