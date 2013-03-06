@@ -3,7 +3,7 @@ inherit cross
 
 NAME="cygwin64-zlib"
 VERSION=1.2.7
-RELEASE=2
+RELEASE=3
 CATEGORY="Devel"
 SUMMARY="zlib for Cygwin 64bit toolchain"
 DESCRIPTION=
@@ -31,7 +31,7 @@ src_compile() {
 	rm -fr ${B}/contrib/minizip/*
 
 	cd ${B}
-	cygmake -f win32/Makefile.gcc \
+	cygmake -j1 -f win32/Makefile.gcc \
 		PREFIX=${CROSS_HOST}- STRIP=: \
 		CFLAGS="${CFLAGS}" \
 		SHAREDLIB=cygz.dll IMPLIB=libz.dll.a
