@@ -2,8 +2,8 @@ CROSS_HOST="x86_64-pc-cygwin"
 inherit cross
 
 NAME="cygwin64-zlib"
-VERSION=1.2.7
-RELEASE=3
+VERSION=1.2.8
+RELEASE=1
 CATEGORY="Devel"
 SUMMARY="zlib for Cygwin 64bit toolchain"
 DESCRIPTION=
